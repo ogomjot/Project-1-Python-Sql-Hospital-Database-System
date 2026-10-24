@@ -1,8 +1,15 @@
 import pymysql
 
 # Password is asked at runtime so it never gets uploaded to GitHub
-password = input('Enter MySQL password: ')
-conn = pymysql.connect(host='localhost', user='root', password=password)
+try:
+    password = input('Enter MySQL password: ')
+    conn = pymysql.connect(host='localhost', user='root', password=password)
+except pymysql.MySQLError as e:
+    print('Could not connect to MySQL:', e)
+    exit()
+except KeyboardInterrupt:
+    print('\nCancelled.')
+    exit()
 cur = conn.cursor()
 
 
@@ -31,6 +38,9 @@ def add():
         print('Patient ID already exists')
         return
     Pname = input('Enter Patient Name: ')
+    if Pname.strip() == '':
+        print('Name cannot be empty')
+        return
     age = int(input('Enter Age of the Patient: '))
     C_no = int(input('Enter Patient Contact Number: '))
     D = input('Enter Patient Diagnosis: ')
@@ -153,6 +163,9 @@ Enter choice: '''))
 
 
 # 'use hospital' is needed before add/view/etc, so create() runs once at start
-create()
-menu()
+try:
+    create()
+    menu()
+except KeyboardInterrupt:
+    print('\nGoodbye.')
 conn.close()
